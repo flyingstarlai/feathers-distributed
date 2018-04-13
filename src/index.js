@@ -65,22 +65,21 @@ export default function init (options) {
         }
         return;
       }
-      app.use(serviceDescriptor.path, new RemoteService(serviceDescriptor));
-      debug('Registered remote service on path ' + serviceDescriptor.path);
+
+      if(distributionOptions.remotes) {
+        distributionOptions.remotes.forEach(remote =>  {
+          if(remote === serviceDescriptor.path) {
+            app.use(serviceDescriptor.path, new RemoteService(serviceDescriptor));
+            debug('Registered remote service on path ' + serviceDescriptor.path);
+          }
+        })
+      }
 
       // registering hook object on every remote service
       if (distributionOptions.hooks) {
         app.service(serviceDescriptor.path).hooks(distributionOptions.hooks);
       }
       debug('Registered hooks on remote service on path ' + serviceDescriptor.path);
-
-      if(distributionOptions.remote) {
-        this.RemoteService = RemoteService;
-      }
-
-      if(distributionOptions.local) {
-        this.LocalService = LocalService;
-      }
 
 
       // dispatch an event internally through node so that async processes can run
@@ -96,8 +95,10 @@ export default function init (options) {
       // Also avoid infinite loop by registering already registered remote services
       if (typeof service === 'object' && !service.remote) {
         // Publish new local service
-        app.servicePublisher.publish('service', { uuid: app.uuid, path: stripSlashes(path) });
-        debug('Published local service on path ' + path);
+        if(!distributionOptions.gateway) {
+          app.servicePublisher.publish('service', { uuid: app.uuid, path: stripSlashes(path) });
+          debug('Published local service on path ' + path);
+        }
         // Register the responder to handle remote calls to the service
         service.responder = new LocalService({ app, path: stripSlashes(path) });
       }
