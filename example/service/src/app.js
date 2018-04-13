@@ -31,7 +31,10 @@ app.use('/', express.static(app.get('public')));
 
 app.configure(express.rest());
 app.configure(socketio());
-app.configure(distribution());
+app.configure(distribution({
+  remote: false,
+  local: true
+}));
 
 // Configure other middleware (see `middleware/index.js`)
 app.configure(middleware);

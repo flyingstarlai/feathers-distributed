@@ -41,6 +41,8 @@ app.configure(
         all: [authenticate('jwt')],
       },
     },
+    remote: true,
+    local: false
   })
 );
 

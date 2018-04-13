@@ -74,6 +74,15 @@ export default function init (options) {
       }
       debug('Registered hooks on remote service on path ' + serviceDescriptor.path);
 
+      if(distributionOptions.remote) {
+        this.RemoteService = RemoteService;
+      }
+
+      if(distributionOptions.local) {
+        this.LocalService = LocalService;
+      }
+
+
       // dispatch an event internally through node so that async processes can run
       app.emit('service', serviceDescriptor);
     });
@@ -96,5 +105,5 @@ export default function init (options) {
   };
 }
 
-init.RemoteService = RemoteService;
-init.LocalService = LocalService;
+// init.RemoteService = RemoteService;
+// init.LocalService = LocalService;
